@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Editor;
+using UnityEngine;
 
 namespace technical.test.editor
 {
@@ -7,9 +8,16 @@ namespace technical.test.editor
     {
         [SerializeField] private Gizmo[] _gizmos = default;
 
+        public Gizmo[] Gizmos => _gizmos;
+        
         public override string ToString()
         {
             return "Gizmo count : " + _gizmos.Length;
+        }
+
+        public void OpenGizmoDisplayWindowWithThis()
+        {
+            GizmoDisplayWindow.Initialize();
         }
     }
 
