@@ -11,6 +11,8 @@ namespace Editor
         private static SceneGizmoAsset _gizmoAsset;
 
         private string _path = "Assets/Data/Editor/Scene Gizmo Asset.asset"; //TODO set default value
+
+        public static SceneGizmoAsset GizmoAsset => _gizmoAsset;
         
         [MenuItem("Window/Custom/Show Gizmos")]
         public static void Initialize()
@@ -48,14 +50,28 @@ namespace Editor
                 {
                     //TODO Edit selected gizmo
                 }
+                
+                AssetDatabase.SaveAssets();
             }
-
-            // groupEnabled = EditorGUILayout.BeginToggleGroup("Optional Settings", groupEnabled);
-            // myBool = EditorGUILayout.Toggle("Toggle", myBool);
-            // myFloat = EditorGUILayout.Slider("Slider", myFloat, -3, 3);
-            // EditorGUILayout.EndToggleGroup();
+        }
+        
+        [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
+        static void DrawGizmo(Camera scr, GizmoType gizmoType)
+        {
+            if (SceneView.currentDrawingSceneView == null || Camera.current != SceneView.currentDrawingSceneView.camera) return;
+            if (_gizmoAsset == null) return;
+            
+            for (var i = 0; i < _gizmoAsset.Gizmos.Length; i++)
+            {
+                var gizmo = _gizmoAsset.Gizmos[i];
+                
+                Gizmos.color = Color.white;
+                Gizmos.DrawSphere(gizmo.Position, 0.5f);
+                GUI.color = Color.black;
+                Handles.Label(gizmo.Position + Vector3.up, gizmo.Name);
+            }
         }
     }
-}
+}   
 
 #endif
