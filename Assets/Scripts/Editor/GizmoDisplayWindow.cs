@@ -54,8 +54,8 @@ namespace Editor
                 {
                     //TODO Edit selected gizmo
                 }
-                
-                AssetDatabase.SaveAssets();
+
+                _gizmoAsset.Gizmos[i] = gizmo;
                 GUILayout.EndHorizontal();
             }
         }
