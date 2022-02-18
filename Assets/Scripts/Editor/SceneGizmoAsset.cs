@@ -1,5 +1,4 @@
-﻿using Editor;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace technical.test.editor
 {
@@ -13,11 +12,6 @@ namespace technical.test.editor
         public override string ToString()
         {
             return "Gizmo count : " + _gizmos.Length;
-        }
-
-        public void OpenGizmoDisplayWindowWithThis()
-        {
-            GizmoDisplayWindow.Initialize();
         }
     }
 

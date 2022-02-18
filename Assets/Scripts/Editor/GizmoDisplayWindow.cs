@@ -10,7 +10,7 @@ namespace Editor
     {
         private static SceneGizmoAsset _gizmoAsset;
 
-        private string _path = "Assets/Data/Editor/Scene Gizmo Asset.asset"; //TODO set default value
+        private string _path = "Assets/Data/Editor/Scene Gizmo Asset.asset";
 
         public static SceneGizmoAsset GizmoAsset => _gizmoAsset;
         
@@ -21,12 +21,15 @@ namespace Editor
             window.Show();
         }
 
+        //TODO call this from SceneGizmoAsset
         public static void Initialize(SceneGizmoAsset gizmoAsset)
         {
             _gizmoAsset = gizmoAsset == null ? _gizmoAsset : gizmoAsset;
             Initialize();
         }
 
+        //TODO load gizmo after compilation
+        
         private void OnGUI()
         {
             GUILayout.Label("Gizmo Editor", EditorStyles.boldLabel);
@@ -43,6 +46,7 @@ namespace Editor
             {
                 var gizmo = _gizmoAsset.Gizmos[i];
                 
+                GUILayout.BeginHorizontal();
                 //TODO Add save here
                 gizmo.Name = EditorGUILayout.TextField("Name", gizmo.Name);
                 gizmo.Position = EditorGUILayout.Vector3Field("position", gizmo.Position);
@@ -52,6 +56,7 @@ namespace Editor
                 }
                 
                 AssetDatabase.SaveAssets();
+                GUILayout.EndHorizontal();
             }
         }
         
