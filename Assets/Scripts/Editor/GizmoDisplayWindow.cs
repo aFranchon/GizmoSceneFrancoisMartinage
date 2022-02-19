@@ -1,7 +1,8 @@
 ﻿#if UNITY_EDITOR
 
-using JetBrains.Annotations;
+using Codice.Client.BaseCommands;
 using technical.test.editor;
+using Unity.UNetWeaver;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,8 +16,8 @@ namespace Editor
 
         public static SceneGizmoAsset GizmoAsset => _gizmoAsset;
 
-        private static GameObject _selectedGameObject;
-        private static int _selectGizmoIndex = -1;
+        private GameObject _selectedGameObject;
+        private int _selectGizmoIndex = -1;
         
         [MenuItem("Window/Custom/Show Gizmos")]
         public static void Initialize()
@@ -24,24 +25,15 @@ namespace Editor
             var window = (GizmoDisplayWindow)GetWindow(typeof(GizmoDisplayWindow));
             window.Show();
         }
-
-        private void Awake()
-        {
-            Debug.Log("here");
-            AssemblyReloadEvents.beforeAssemblyReload += () =>
-            {
-                if (_selectedGameObject != null) DestroyImmediate(_selectedGameObject);
-            };
-        }
-
+        
         private void Update()
         {
             if (_selectGizmoIndex < 0) return;
 
+            Debug.Log("here");
             _gizmoAsset.Gizmos[_selectGizmoIndex].Position = _selectedGameObject.transform.position;
         }
 
-        //TODO call this from SceneGizmoAsset
         public static void Initialize(SceneGizmoAsset gizmoAsset)
         {
             _gizmoAsset = gizmoAsset == null ? _gizmoAsset : gizmoAsset;
@@ -110,7 +102,7 @@ namespace Editor
                 DestroyImmediate(_selectedGameObject);
             }
 
-            _selectedGameObject = new GameObject("GizmoPosition => " + gizmo.Name);
+            _selectedGameObject = new GameObject("GizmoPosition = > " + gizmo.Name);
             _selectedGameObject.transform.position = gizmo.Position;
                     
             Selection.activeGameObject = _selectedGameObject;
@@ -128,7 +120,7 @@ namespace Editor
         }
         
         [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
-        static void DrawGizmo(Camera scr, GizmoType gizmoType)
+        private static void DrawGizmo(Camera scr, GizmoType gizmoType)
         {
             if (SceneView.currentDrawingSceneView == null || Camera.current != SceneView.currentDrawingSceneView.camera) return;
             if (_gizmoAsset == null) return;

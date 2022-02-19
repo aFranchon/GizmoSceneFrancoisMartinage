@@ -1,5 +1,4 @@
-﻿using System;
-using technical.test.editor;
+﻿using technical.test.editor;
 using UnityEditor;
 using UnityEngine;
 
