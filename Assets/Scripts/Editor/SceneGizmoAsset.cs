@@ -7,7 +7,11 @@ namespace technical.test.editor
     {
         [SerializeField] private Gizmo[] _gizmos = default;
 
-        public Gizmo[] Gizmos => _gizmos;
+        public Gizmo[] Gizmos
+        {
+            get => _gizmos;
+            set => _gizmos = value;
+        }
         
         public override string ToString()
         {

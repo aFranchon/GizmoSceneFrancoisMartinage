@@ -1,5 +1,7 @@
 ﻿#if UNITY_EDITOR
 
+using System.Collections.Generic;
+using NUnit.Framework;
 using technical.test.editor;
 using UnityEditor;
 using UnityEngine;
@@ -20,6 +22,58 @@ namespace Editor
         {
             var window = (GizmoDisplayWindow)GetWindow(typeof(GizmoDisplayWindow));
             window.Show();
+        }
+        
+        private void OnEnable()
+        {
+            SceneView.onSceneGUIDelegate += SceneGUI;
+        }
+ 
+        void SceneGUI(SceneView sceneView)
+        {
+            if (_selectGizmoIndex == -1) return;
+
+            var currentEvent = Event.current;
+            
+            if (currentEvent.button != 1 || currentEvent.type != EventType.MouseDown) return;
+
+            var ray = HandleUtility.GUIPointToWorldRay(currentEvent.mousePosition);
+
+            var distance = Vector3.Cross(ray.direction, _selectedGameObject.transform.position - ray.origin).magnitude;
+
+            if (distance >= 1f) return;
+
+            Debug.Log("here");
+
+            ShowMenu();
+        }
+        
+        private void ShowMenu()
+        {
+            var menu = new GenericMenu();
+            
+            menu.AddItem(new GUIContent("Undo"), false, UndoAction);
+            menu.AddItem(new GUIContent("Delete"), false, DeleteButton);
+            menu.ShowAsContext();
+        }
+
+        private void UndoAction()
+        {
+            Debug.Log("a");
+        }
+
+        private void DeleteButton()
+        {
+            var gizmos = new List<Gizmo>();
+
+            for (var i = 0; i < _gizmoAsset.Gizmos.Length; i++)
+            {
+                gizmos.Add(_gizmoAsset.Gizmos[i]);
+            }
+            
+            gizmos.RemoveAt(_selectGizmoIndex - 1);
+            _gizmoAsset.Gizmos = gizmos.ToArray();
+            UnselectGizmo();
         }
         
         private void Update()
@@ -118,7 +172,7 @@ namespace Editor
         }
         
         [DrawGizmo(GizmoType.NonSelected | GizmoType.Active | GizmoType.Selected)]
-        private static void DrawGizmo(GizmoPosition scr, GizmoType gizmoType)
+        private static void DrawGizmo(Camera scr, GizmoType gizmoType)
         {
             if (SceneView.currentDrawingSceneView == null || Camera.current != SceneView.currentDrawingSceneView.camera) return;
             if (_gizmoAsset == null) return;
