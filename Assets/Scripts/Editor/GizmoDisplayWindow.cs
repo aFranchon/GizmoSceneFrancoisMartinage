@@ -1,8 +1,6 @@
 ﻿#if UNITY_EDITOR
 
-using Codice.Client.BaseCommands;
 using technical.test.editor;
-using Unity.UNetWeaver;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,8 +11,6 @@ namespace Editor
         private static SceneGizmoAsset _gizmoAsset;
 
         private string _path = "Assets/Data/Editor/Scene Gizmo Asset.asset";
-
-        public static SceneGizmoAsset GizmoAsset => _gizmoAsset;
 
         private GameObject _selectedGameObject;
         private int _selectGizmoIndex = -1;
@@ -30,7 +26,6 @@ namespace Editor
         {
             if (_selectGizmoIndex < 0) return;
 
-            Debug.Log("here");
             _gizmoAsset.Gizmos[_selectGizmoIndex].Position = _selectedGameObject.transform.position;
         }
 
@@ -39,6 +34,8 @@ namespace Editor
             _gizmoAsset = gizmoAsset == null ? _gizmoAsset : gizmoAsset;
             Initialize();
         }
+        
+        
         
         private void OnGUI()
         {
@@ -103,8 +100,9 @@ namespace Editor
             }
 
             _selectedGameObject = new GameObject("GizmoPosition = > " + gizmo.Name);
+            _selectedGameObject.AddComponent<GizmoPosition>();
             _selectedGameObject.transform.position = gizmo.Position;
-                    
+            
             Selection.activeGameObject = _selectedGameObject;
             _selectGizmoIndex = index;
         }
@@ -119,13 +117,13 @@ namespace Editor
             _selectGizmoIndex = -1;
         }
         
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected | GizmoType.NonSelected)]
-        private static void DrawGizmo(Camera scr, GizmoType gizmoType)
+        [DrawGizmo(GizmoType.NonSelected | GizmoType.Active | GizmoType.Selected)]
+        private static void DrawGizmo(GizmoPosition scr, GizmoType gizmoType)
         {
             if (SceneView.currentDrawingSceneView == null || Camera.current != SceneView.currentDrawingSceneView.camera) return;
             if (_gizmoAsset == null) return;
             
-            for (var i = 0; i < _gizmoAsset.Gizmos.Length; i++)
+            for (var i = _gizmoAsset.Gizmos.Length - 1; i >= 0; i--)
             {
                 var gizmo = _gizmoAsset.Gizmos[i];
                 

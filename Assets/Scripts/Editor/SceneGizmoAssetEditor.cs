@@ -1,4 +1,6 @@
-﻿using technical.test.editor;
+﻿#if UNITY_EDITOR
+
+using technical.test.editor;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,3 +27,5 @@ namespace Editor
         }
     }
 }
+
+#endif
