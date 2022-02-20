@@ -46,14 +46,14 @@ namespace Editor
 
         private void OnDestroy()
         {
-            SaveChanges();
+            Utils.SaveObjectInstant(_gizmoAsset);
         }
 
         #endregion
 
         #region Scene Handling
 
-        void SceneGUI(SceneView sceneView)
+        private void SceneGUI(SceneView sceneView)
         {
             if (_selectGizmoIndex == -1) return;
 
@@ -65,8 +65,6 @@ namespace Editor
             var distance = Vector3.Cross(ray.direction, _selectedGameObject.transform.position - ray.origin).magnitude;
 
             if (distance >= 1f) return;
-
-            Debug.Log("here");
 
             ShowMenu();
         }
@@ -86,7 +84,7 @@ namespace Editor
 
         private void UndoActionButton()
         {
-            Debug.Log("a");
+            Debug.Log("Not Done");
         }
 
         private void DeleteButton()
@@ -101,7 +99,7 @@ namespace Editor
             gizmos.RemoveAt(_selectGizmoIndex - 1);
             _gizmoAsset.Gizmos = gizmos.ToArray();
             
-            SaveChanges();
+            Utils.SaveObjectInstant(_gizmoAsset);
             UnselectGizmo();
         }
 
@@ -131,6 +129,7 @@ namespace Editor
         private void DisplayGizmoAssetInfos()
         {
             EditorGUILayout.TextField("SceneGizmoAsset asset path", _path);
+            
             if (GUILayout.Button("Load SceneGizmoAsset"))
             {
                 _gizmoAsset = Utils.GetSceneGizmoAssetFromPath(_path);
@@ -149,7 +148,6 @@ namespace Editor
                 var gizmo = _gizmoAsset.Gizmos[i];
 
                 var name = gizmo.Name;
-                var position = gizmo.Position;
                 
                 GUILayout.BeginHorizontal();
                 
@@ -173,7 +171,13 @@ namespace Editor
 
                 _gizmoAsset.Gizmos[i] = gizmo;
 
+                if (name != gizmo.Name)
+                {
+                    Utils.SaveObjectInstant(_gizmoAsset);
+                }
+                
                 GUILayout.EndHorizontal();
+                EditorGUILayout.Space();
             }
         }
 
@@ -184,11 +188,8 @@ namespace Editor
         private void SelectGizmo(Gizmo gizmo, int index)
         {
             Tools.current = Tool.Move;
-                    
-            if (_selectedGameObject != null)
-            {
-                DestroyImmediate(_selectedGameObject);
-            }
+
+            UnselectGizmo();
 
             _selectedGameObject = new GameObject("GizmoPosition = > " + gizmo.Name)
             {
@@ -210,6 +211,7 @@ namespace Editor
             }
             
             _selectGizmoIndex = -1;
+            Utils.SaveObjectInstant(_gizmoAsset);
         }
 
         #endregion
@@ -230,18 +232,9 @@ namespace Editor
                 Gizmos.DrawSphere(gizmo.Position, 0.5f);
                 GUI.color = Color.black;
                 Handles.Label(gizmo.Position + Vector3.up, gizmo.Name);
+                Gizmos.color = Color.black;
+                Gizmos.DrawLine(gizmo.Position, gizmo.Position + Vector3.up);
             }
-        }
-
-        #endregion
-        
-
-        #region Save
-        
-        private void SaveChanges()
-        {
-            EditorUtility.SetDirty(_gizmoAsset);
-            AssetDatabase.SaveAssets();
         }
 
         #endregion
