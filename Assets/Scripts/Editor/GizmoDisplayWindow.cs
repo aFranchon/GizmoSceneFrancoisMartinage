@@ -13,7 +13,7 @@ namespace Editor
           
         private static SceneGizmoAsset _gizmoAsset;
 
-        private string _path = "Assets/Data/Editor/Scene Gizmo Asset.asset";
+        private const string DefaultPath = "Assets/Data/Editor/Scene Gizmo Asset.asset";
 
         private GameObject _selectedGameObject;
         private int _selectGizmoIndex = -1;
@@ -128,16 +128,12 @@ namespace Editor
 
         private void DisplayGizmoAssetInfos()
         {
-            EditorGUILayout.TextField("SceneGizmoAsset asset path", _path);
+            _gizmoAsset =
+                EditorGUILayout.ObjectField("SceneGizmoAsset asset path", _gizmoAsset, typeof(SceneGizmoAsset), false) as SceneGizmoAsset;
             
-            if (GUILayout.Button("Load SceneGizmoAsset"))
-            {
-                _gizmoAsset = Utils.GetSceneGizmoAssetFromPath(_path);
-            }
-
             if (_gizmoAsset == null)
             {
-                _gizmoAsset = Utils.GetSceneGizmoAssetFromPath(_path);
+                _gizmoAsset = Utils.GetSceneGizmoAssetFromPath(DefaultPath);
             }
         }
 
@@ -219,7 +215,7 @@ namespace Editor
         #region Unity's Gizmos
         
         [DrawGizmo(GizmoType.NonSelected | GizmoType.Active | GizmoType.Selected)]
-        private static void DrawGizmo(Camera scr, GizmoType gizmoType)
+        private static void DrawGizmo(AudioListener scr, GizmoType gizmoType)
         {
             if (SceneView.currentDrawingSceneView == null || Camera.current != SceneView.currentDrawingSceneView.camera) return;
             if (_gizmoAsset == null) return;
